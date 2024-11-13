@@ -37,4 +37,14 @@ class BeatCounter {
     this.bpm = newBPM;
     this.beatInterval = (60 / this.bpm) * 1000;
   }
+
+  getBeatInfo() {
+    return {
+      BPM: this.bpm,
+      count: this.count,
+      barCount: this.barCount,
+      phaseCount: this.phaseCount,
+      interpolatedCount: this.interpolatedCount,
+    };
+  }
 }

@@ -1,39 +1,75 @@
-let beatCounter;
-const colorPalettes = [
-    ["red", "white"],
-    ["green", "orange"],
-    ["blue", "black"],
-    ["purple", "pink"],
-];
+const BPM = 100;
+let textureManager;
+let mainTexture;
+let drawTexture;
+let font;
+let UIfont;
+
+function preload(){
+    font = loadFont("../assets/font/RampartOne-Regular.ttf");
+    UIfont = loadFont("../assets/font/NotoSans-VariableFont_wdth,wght.ttf");
+}
 
 function setup() {
     createCanvas(windowWidth, windowHeight);
-    beatCounter = new BeatCounter(100);
+
+    mainTexture = createGraphics(width, height);
+    drawTexture = createGraphics(width, height);
+
+    background(0);
+    mainTexture.background(0);
+    drawTexture.background(0);
+
+    textureManager = new TextureManager(BPM);
 }
 
 function draw() {
-    beatCounter.update();
+    background(0);
 
-    const a = pow(fract(beatCounter.interpolatedCount),2);
-    const invertCount = beatCounter.count % 4;
-    const measureCount = floor(beatCounter.count / 4) % 4;
-    const cp = colorPalettes[measureCount];
+    // 毎フレームバッファをクリア
+    mainTexture.clear();
+    drawTexture.clear();
 
-    const noiseNum1 = noise(measureCount, frameCount / 100, 1);
-    const noiseNum2 = noise(measureCount, frameCount / 100, 2);
+    mainTexture.background(0);
+    drawTexture.background(0);
 
-    push();
-    translate(0, frameCount*2%height);
-    if (invertCount == 2) {
-        background(cp[0]);
-        fill(cp[1]);
-        noStroke();
-        circle(noiseNum1 * width*0.5 + width * 0.25, noiseNum2 * height*0.5 + height * 0.25, 300*a);
-    } else {
-        background(cp[1]);
-        fill(cp[0]);
-        noStroke();
-        circle(noiseNum1 * width*0.5 + width * 0.25, noiseNum2 * height*0.5 + height * 0.25, 300*a);
+    textureManager.update(drawTexture);
+    textureManager.splitTex(drawTexture, mainTexture);
+    textureManager.rotateTex(drawTexture, mainTexture);
+
+    image(mainTexture, 0, 0, width, height);
+
+    fill(255);
+    // text(textureManager.beatCounter.phaseCount, 10, 10);
+    UIDrawing(textureManager.beatCounter.getBeatInfo());
+}
+
+function windowResized() {
+    resizeCanvas(windowWidth, windowHeight);
+
+    // 既存のグラフィックスバッファを解放
+    if (mainTexture) {
+        mainTexture.remove();
     }
-    pop();
+    if (drawTexture) {
+        drawTexture.remove();
+    }
+
+    // 新しいサイズでグラフィックスバッファを作成
+    mainTexture = createGraphics(width, height);
+    drawTexture = createGraphics(width, height);
+}
+
+function UIDrawing(info){
+    fill(240, 240);
+    textSize(30);
+
+    let i = 0;
+    for (let key in info) {
+        i ++;
+        const a = key;
+        const b = formatNumber(info[key]);
+        textFont(UIfont);
+        text(a + " : " + b, 30, 60 * i);
+    }
 }
