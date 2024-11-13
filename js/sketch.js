@@ -1,7 +1,6 @@
 const BPM = 100;
 let textureManager;
 let mainTexture;
-let drawTexture;
 let font;
 let UIfont;
 
@@ -14,11 +13,9 @@ function setup() {
     createCanvas(windowWidth, windowHeight);
 
     mainTexture = createGraphics(width, height);
-    drawTexture = createGraphics(width, height);
 
     background(0);
     mainTexture.background(0);
-    drawTexture.background(0);
 
     textureManager = new TextureManager(BPM);
 }
@@ -26,38 +23,15 @@ function setup() {
 function draw() {
     background(0);
 
-    // 毎フレームバッファをクリア
     mainTexture.clear();
-    drawTexture.clear();
-
     mainTexture.background(0);
-    drawTexture.background(0);
 
-    textureManager.update(drawTexture);
-    textureManager.splitTex(drawTexture, mainTexture);
-    textureManager.rotateTex(drawTexture, mainTexture);
+    textureManager.update(mainTexture);
+    textureManager.splitTex(mainTexture);
+    textureManager.rotateTex(mainTexture);
+    textureManager.displayTex(mainTexture);
 
-    image(mainTexture, 0, 0, width, height);
-
-    fill(255);
-    // text(textureManager.beatCounter.phaseCount, 10, 10);
     UIDrawing(textureManager.beatCounter.getBeatInfo());
-}
-
-function windowResized() {
-    resizeCanvas(windowWidth, windowHeight);
-
-    // 既存のグラフィックスバッファを解放
-    if (mainTexture) {
-        mainTexture.remove();
-    }
-    if (drawTexture) {
-        drawTexture.remove();
-    }
-
-    // 新しいサイズでグラフィックスバッファを作成
-    mainTexture = createGraphics(width, height);
-    drawTexture = createGraphics(width, height);
 }
 
 function UIDrawing(info){
