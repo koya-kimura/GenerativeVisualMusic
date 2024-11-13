@@ -8,7 +8,9 @@ class CircleMotion {
     }
 
     display(tex){
-        tex.fill(255, 0, 50)
-        tex.rect(width*0.1, height*0.1, width*0.8, height*0.8);
+        tex.textAlign(CENTER);
+        tex.fill(255, 0, 50);
+        tex.textSize(100);
+        tex.text("A", width/2, height/2);
     }
 }

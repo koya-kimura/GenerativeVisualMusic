@@ -36,11 +36,11 @@ class TextureManager {
 function splitTexture(tex,vertSplitCount, horizSplitCount) {
     const srcTex = tex.get();
 
-    const segH = srcTex.height / vertSplitCount;
-    const segW = srcTex.width / horizSplitCount;
+    const segH = tex.height / vertSplitCount;
+    const segW = tex.width / horizSplitCount;
 
-    const srcX = srcTex.width / 2 - segW / 2;
-    const srcY = srcTex.height / 2 - segH / 2;
+    const srcX = tex.width / 2 - segW / 2;
+    const srcY = tex.height / 2 - segH / 2;
 
     for (let i = 0; i < vertSplitCount; i++) {
         const destY = i * segH;
@@ -48,7 +48,6 @@ function splitTexture(tex,vertSplitCount, horizSplitCount) {
         for (let j = 0; j < horizSplitCount; j++) {
             const destX = j * segW;
 
-            tex.imageMode(CENTER);
             tex.image(srcTex,
                 destX, destY, segW, segH,
                 srcX, srcY, segW, segH
@@ -61,7 +60,7 @@ function rotateTexture(tex, angle) {
     const srcTex = tex.get();
 
     tex.push();
-    tex.imageMode(CSSLayerStatementRule);
+    tex.imageMode(CENTER);
     tex.translate(tex.width / 2, tex.height / 2);
     tex.rotate(angle);
 
