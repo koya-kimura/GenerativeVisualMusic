@@ -1,15 +1,16 @@
 class BeatCounter {
   constructor(bpm) {
+    this.bpm = bpm; // BPM
+    this.lastBeatTime = 0; // 最後に拍を検出した時間
+    this.beatInterval = (60 / this.bpm) * 1000; // 拍の間隔（ミリ秒）
+    this.interpolatedCount = 0; // 線形補間された拍カウント
+    this.count = 0; // 拍カウント
     this.barCount = 0; // 小節カウント（4拍ごとに1増加）
     this.phaseCount = 0; // フェーズカウント（16拍ごとに1増加）
-    this.count = 0; // 拍カウント
-    this.lastBeatTime = 0;
-    this.bpm = bpm;
-    this.beatInterval = (60 / this.bpm) * 1000;
-    this.interpolatedCount = 0; // 線形補間された拍カウント
   }
 
   update() {
+    // 現在の時間を取得
     let currentTime = millis();
 
     // 線形補間値の計算
