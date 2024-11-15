@@ -29,7 +29,7 @@ class BeatCounter {
 
   getInfo() {
     return {
-      "BPM": this.bpm,
+      // "BPM": this.bpm,
       "Interpolated Count": this.interpolatedCount,
       "Interpolated Bar Count": this.interpolatedBarCount,
       "Interpolated Phase Count": this.interpolatedPhaseCount
