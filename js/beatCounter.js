@@ -4,9 +4,8 @@ class BeatCounter {
     this.lastBeatTime = 0; // 最後に拍を検出した時間
     this.beatInterval = (60 / this.bpm) * 1000; // 拍の間隔（ミリ秒）
     this.interpolatedCount = 0; // 線形補間された拍カウント
-    this.count = 0; // 拍カウント
-    this.barCount = 0; // 小節カウント（4拍ごとに1増加）
-    this.phaseCount = 0; // フェーズカウント（16拍ごとに1増加）
+    this.interpolatedBarCount = 0; // 線形補間された小節カウント
+    this.interpolatedPhaseCount = 0; // 線形補間された16拍フェーズカウント
   }
 
   update() {
@@ -14,23 +13,26 @@ class BeatCounter {
     let currentTime = millis();
 
     // 線形補間値の計算
-    this.interpolatedCount =
-      this.count + (currentTime - this.lastBeatTime) / this.beatInterval;
+    this.interpolatedCount = floor(this.interpolatedCount) + (currentTime - this.lastBeatTime) / this.beatInterval;
+
+    // 小節カウントの線形補間（4拍ごと）
+    this.interpolatedBarCount = (this.interpolatedCount / 4) % 4;
+
+    // フェーズカウントの線形補間（16拍ごと）
+    this.interpolatedPhaseCount = (this.interpolatedCount / 16) % 4;
 
     // 拍の更新
     if (currentTime - this.lastBeatTime >= this.beatInterval) {
-      this.count++;
       this.lastBeatTime = currentTime;
-
-      // 4拍ごとに小節カウントを更新
-      if (this.count % 4 === 0) {
-        this.barCount++;
-      }
-
-      // 16拍ごとにフェーズカウントを更新
-      if (this.count % 16 === 0) {
-        this.phaseCount++;
-      }
     }
+  }
+
+  getInfo() {
+    return {
+      "BPM": this.bpm,
+      "Interpolated Count": this.interpolatedCount,
+      "Interpolated Bar Count": this.interpolatedBarCount,
+      "Interpolated Phase Count": this.interpolatedPhaseCount
+    };
   }
 }
