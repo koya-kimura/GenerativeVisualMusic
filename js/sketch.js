@@ -25,8 +25,8 @@ function draw() {
     const grid = max(width, height) / n;
     const canvasAngle = (floor(phase) + Easing.easeInOutSine(fract((max(14, count % 16)-14) / 2))) * PI / 2;
 
-    const camvasScaleMin = map(noise(floor((count%64) / 64), 312), 0, 1, 0.7, 1.2);
-    const camvasScaleMax = map(noise(floor(((count+32)%64) / 64), 929), 0, 1, 7, 15);
+    const camvasScaleMin = map(pow(noise(floor((count%64) / 64), 312), 2), 0, 1, 2, 0.7);
+    const camvasScaleMax = map(pow(noise(floor(((count+32)%64) / 64), 929), 2), 0, 1, 4, 8);
     const camvasScale = phase < 1 ? camvasScaleMax : (phase < 2 ? map(Easing.easeInOutCubic(fract(phase)), 0, 1, camvasScaleMax, camvasScaleMin) : (phase < 3 ? camvasScaleMin : map(Easing.easeInOutCubic(fract(phase)), 0, 1, camvasScaleMin, camvasScaleMax)));
     const canvasAspect = map(pow(noise(floor(count/64) + Easing.easeInOutSine(fract((max(56, count % 64)-56) / 8)), 928), 4), 0, 1, 1, 10);
 
@@ -34,13 +34,22 @@ function draw() {
 
     translate(width / 2, height/2);
     rotate(canvasAngle);
+
+    // plus
+    push();
+    stroke(255)
+    line(-30, 0, 30, 0);
+    line(0, -30, 0, 30);
+    pop();
+
     scale(camvasScale * canvasAspect, camvasScale);
 
     for (let x = -max(width, height); x <= max(width, height); x += grid) {
         for (let y = -max(width, height); y <= max(width, height); y += grid) {
-            const speed = 30;
+            const speed = 20 + sin(count/100) * 10;
+            const amplitude = pow(map(sin(count/53.729), -1, 1, 0, 1), 7) * max(width, height) / 2;
             const vx = phase < 1 ? floor(count / 64) * 64 * 0.75 * speed : (count - ceil(count / 64) * 16) * speed;
-            const vy = 0;
+            const vy = map(noise(x, y, count / 30), 0, 1, -amplitude, amplitude);
 
             const nx = (x + vx + max(width, height)) % (max(width, height) * 2) - max(width, height);
             const ny = (y + vy + max(width, height)) % (max(width, height) * 2) - max(width, height);
@@ -48,7 +57,7 @@ function draw() {
             const g = grid * map(pow(noise(count/100), 4), 0, 1, 0.2, 10);
             const s = g * map(Easing.easeInSine(abs(map(fract(bar), 0, 1, -1, 1))), 0, 1, 0.1, 0.5) * map(pow(noise(x * (noise(floor(phase/4), 1237) > 0.7), y * (noise(floor(phase/4), 5917) > 0.7), 7837), 5), 0, 1, 1, 10);
             const w = s * map(pow(noise(floor(count / 16) + fract((max(14, count % 16) - 14) / 2), x * (noise(floor(phase), 863) > 0.7), y * (noise(floor(phase), 530) > 0.7)), 4), 0, 1, 1, 10);
-            const h = s;
+            const h = map(pow(noise(count/100, 8291), 5), 0, 1, s, 1);
             const angle = phase < 2 ? (floor(count / 64) * 64 * 0.5) * PI / 2 : ((count - ceil(count / 64) * 32)) * PI / 2;
 
             const radius = round(noise(floor(count / 64) + fract((max(60, count % 64) - 60) / 4), 423)) * max(w, h) / 2;
@@ -65,7 +74,7 @@ function draw() {
 
             // textAlign(CENTER, CENTER);
             // textSize(max(w, h));
-            // text("A", 0, 0);
+            // text(hiraganaChars[floor(noise(x, y)*hiraganaChars.length)], 0, 0);
 
             pop();
         }
@@ -84,15 +93,6 @@ function draw() {
     pop();
 
     blendMode(BLEND);
-
-    // frame
-    push();
-    const l = 0;
-    fill(255);
-    noStroke();
-    rect(0, 0, width, l);
-    rect(0, height - l, width, l);
-    pop();
 
     // UI
     UIDrawing(beatCounter.getInfo());
